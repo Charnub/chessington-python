@@ -30,6 +30,11 @@ class Piece(ABC):
         board.move_piece(current_square, new_square)
         self.moved = True
 
+    def can_capture(self, board, square):
+        return (board.squareBound(square) and
+                board.fullSquare(square) and
+                board.get_piece(square).player != self.player)
+
 
 class Pawn(Piece):
     """
@@ -43,13 +48,19 @@ class Pawn(Piece):
         single_move = Square.at(location.row + piece, location.col)  # Will move one space
         double_move = Square.at(location.row + 2 * piece, location.col)  # Will move 2 spaces
 
-        if not board.squareBound(single_move) or board.fullSquare(single_move):  #
-            return []
-        elif self.moved or not board.squareBound(double_move) or board.fullSquare(double_move):
-            return [single_move]
-        else:
-            return [single_move, double_move]
+        board_moves = []
 
+        if not board.squareBound(single_move) or board.fullSquare(single_move):  #
+            board_moves = []
+        elif self.moved or not board.squareBound(double_move) or board.fullSquare(double_move):
+            board_moves = [single_move]
+        else:
+            board_moves = [single_move, double_move]
+
+        board_capture = [Square.at(location.row + piece, location.col + 1), Square.at(location.row + piece, location.col - 1)]
+        board_capture = list(filter(lambda square: self.can_capture(board, square), board_capture))
+
+        return board_moves + board_capture
 
 
 class Knight(Piece):
