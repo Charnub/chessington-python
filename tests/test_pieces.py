@@ -1,6 +1,6 @@
 from chessington.engine.board import Board
 from chessington.engine.data import Player, Square
-from chessington.engine.pieces import Pawn
+from chessington.engine.pieces import Pawn, Knight
 
 class TestPawns:
 
@@ -331,3 +331,67 @@ class TestPawns:
         # Assert
         assert Square.at(2, 3) not in moves
         assert Square.at(2, 5) not in moves
+
+class TestKnight:
+
+    @staticmethod
+    def test_white_knight_can_move_diagonally():
+        # Arrange
+        board = Board.empty()
+        knight = Knight(Player.WHITE)
+        square = Square.at(0, 1)
+        board.set_piece(square, knight)
+
+        # Act
+        moves = knight.get_available_moves(board)
+
+        # Assert
+        assert Square.at(2, 2) in moves
+
+    @staticmethod
+    def test_black_knight_can_move_diagonally():
+        # Arrange
+        board = Board.empty()
+        knight = Knight(Player.BLACK)
+        square = Square.at(7, 1)
+        board.set_piece(square, knight)
+
+        # Act
+        moves = knight.get_available_moves(board)
+
+        # Assert
+        assert Square.at(5, 0) in moves
+
+    @staticmethod
+    def test_knight_leave_the_board():
+        # Arrange
+        board = Board.empty()
+        knight = Knight(Player.WHITE)
+        square = Square.at(7, 7)
+        board.set_piece(square, knight)
+
+        # Act
+        moves = knight.get_available_moves(board)
+
+        # Assert
+        expected_moves = [Square.at(5, 6), Square.at(6, 5)]
+        assert len(moves) == len(expected_moves)
+        assert sorted(moves) == sorted(expected_moves)
+
+    @staticmethod
+    def test_knight_capture_enemy():
+        # Arrange
+        board = Board.empty()
+        knight = Knight(Player.WHITE)
+        square = Square.at(3, 5)
+        board.set_piece(square, knight)
+
+        enemy = Pawn(Player.BLACK)
+        enemy_square = Square.at(1, 4)
+        board.set_piece(enemy_square, enemy)
+
+        # Act
+        moves = knight.get_available_moves(board)
+
+        # Assert
+        assert enemy_square in moves
