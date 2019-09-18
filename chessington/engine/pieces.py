@@ -30,14 +30,6 @@ class Piece(ABC):
         board.move_piece(current_square, new_square)
         self.moved = True
 
-    def available_moves(self, board, direction):
-        square = direction(board.find_piece(self))
-        while self.is_free(board, square):
-            print(square)
-            if board.fullSquare(square):
-                break
-            square = direction(square)
-
     def is_free(self, board, square):
         return board.squareBound(square) and \
                (board.emptySquare(square) or self.capture_piece(board.get_piece(square)))
@@ -109,7 +101,7 @@ class Rook(Piece):
     """
 
     def get_available_moves(self, board):
-        location = board.find_piece(self)
+        return []
 
 
 class Queen(Piece):
@@ -127,4 +119,12 @@ class King(Piece):
     """
 
     def get_available_moves(self, board):
-        return []
+        location = board.find_piece(self)
+
+        king_moves = [
+            Square.at(location.row + 1, location.col + 1), Square.at(location.row + 1, location.col), Square.at(location.row + 1, location.col - 1),
+            Square.at(location.row, location.col + 1), Square.at(location.row, location.col - 1),
+            Square.at(location.row - 1, location.col + 1), Square.at(location.row - 1, location.col), Square.at(location.row - 1, location.col - 1)
+        ]
+
+        return list(filter(lambda square: self.is_free(board, square), king_moves))
