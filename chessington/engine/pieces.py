@@ -30,10 +30,25 @@ class Piece(ABC):
         board.move_piece(current_square, new_square)
         self.moved = True
 
+    def available_moves(self, board, direction):
+        square = direction(board.find_piece(self))
+        while self.is_free(board, square):
+            print(square)
+            if board.fullSquare(square):
+                break
+            square = direction(square)
+
+    def is_free(self, board, square):
+        return board.squareBound(square) and \
+               (board.emptySquare(square) or self.capture_piece(board.get_piece(square)))
+
     def can_capture(self, board, square):
         return (board.squareBound(square) and
                 board.fullSquare(square) and
                 board.get_piece(square).player != self.player)
+
+    def capture_piece(self, piece):
+        return piece.player != self.player
 
 
 class Pawn(Piece):
@@ -69,7 +84,14 @@ class Knight(Piece):
     """
 
     def get_available_moves(self, board):
-        return []
+        location = board.find_piece(self)
+        knight_moves = [
+            Square.at(location.row + 2, location.col + 1), Square.at(location.row + 2, location.col - 1),
+            Square.at(location.row + 1, location.col + 2), Square.at(location.row + 1, location.col - 2),
+            Square.at(location.row - 2, location.col + 1), Square.at(location.row - 2, location.col - 1),
+            Square.at(location.row - 1, location.col + 2), Square.at(location.row - 1, location.col - 2),
+        ]
+        return list(filter(lambda square: self.is_free(board, square), knight_moves))
 
 
 class Bishop(Piece):
@@ -87,7 +109,7 @@ class Rook(Piece):
     """
 
     def get_available_moves(self, board):
-        return []
+        location = board.find_piece(self)
 
 
 class Queen(Piece):
