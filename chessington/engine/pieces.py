@@ -37,16 +37,15 @@ class Pawn(Piece):
     """
 
     def get_available_moves(self, board):
-        # return []
+
         location = board.find_piece(self)  # Finds current position of piece
         piece = 1 if self.player == Player.WHITE else -1
-        # return [Square.at(location.row + piece, location.col)]
-        single_move = Square.at(location.row + piece, location.col)
-        double_move = Square.at(location.row + 2 * piece, location.col)
+        single_move = Square.at(location.row + piece, location.col)  # Will move one space
+        double_move = Square.at(location.row + 2 * piece, location.col)  # Will move 2 spaces
 
-        if board.fullSquare(single_move):
+        if not board.squareBound(single_move) or board.fullSquare(single_move):  #
             return []
-        elif self.moved or board.fullSquare(double_move):
+        elif self.moved or not board.squareBound(double_move) or board.fullSquare(double_move):
             return [single_move]
         else:
             return [single_move, double_move]

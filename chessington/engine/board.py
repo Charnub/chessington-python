@@ -81,6 +81,9 @@ class Board:
             self.set_piece(from_square, None)
             self.current_player = self.current_player.opponent()
 
+    def squareBound(self, square):
+        return 0 <= square.row < BOARD_SIZE and 0 <= square.col < BOARD_SIZE
+
     def emptySquare(self, square):
         return self.get_piece(square) is None
 
